@@ -64,37 +64,60 @@ def app():
         return
 
     # Gráfico de linhas suavizadas
-    chart = (
+    chart_base = (
         alt.Chart(df.reset_index())
-        .mark_line(color='green', interpolate='monotone', strokeWidth=3)
+        .mark_line(color='green', interpolate='monotone', strokeWidth=5)
         .encode(
             x=alt.X('hora', title='Hora', sort=None),
             y=alt.Y(
                 'montante',
                 title='Montante',
-                scale=alt.Scale(domain=[220.40, 220.44]),
-                axis=alt.Axis(format='.2f', values=[round(x, 2) for x in list(frange(220.40, 220.44, 0.01))])
+                scale=alt.Scale(domain=[220.38, 220.46]),
+                axis=alt.Axis(format='.2f', values=[round(x, 2) for x in list(frange(220.38, 220.46, 0.01))])
             ),
             tooltip=[alt.Tooltip('hora', title='Hora'), alt.Tooltip('montante', title='Montante', format='.2f')]
         )
         .properties(
             width=1800,  # largura aumentada
-            height=500,
-            background='black',
-            padding={"left": 20, "right": 20, "top": 20, "bottom": 20},
-        )
-        .configure_axis(
-            labelFontSize=18,
-            titleFontSize=20
-        )
-        .configure_legend(
-            labelFontSize=18,
-            titleFontSize=20
-        )
-        .configure_title(
-            fontSize=24
+            height=500
         )
     )
+
+    # Linhas horizontais de limite em vermelho, tracejadas e mais finas que a série montante
+    limites = pd.DataFrame({'y': [220.40, 220.44]})
+    linhas_limite = alt.Chart(limites).mark_rule(color='red', strokeWidth=1, strokeDash=[6,4]).encode(y='y')
+
+    # Adiciona marcador e rótulo no último valor da série
+    ultimo_ponto = df.reset_index().iloc[[-1]]
+    marcador = alt.Chart(ultimo_ponto).mark_circle(color='green', size=100).encode(
+        x='hora',
+        y='montante',
+        tooltip=[alt.Tooltip('hora', title='Hora'), alt.Tooltip('montante', title='Montante', format='.2f')]
+    )
+    rotulo = alt.Chart(ultimo_ponto).mark_text(
+        align='center',
+        baseline='bottom',
+        dy=-15,  # desloca o texto para cima do ponto
+        color='yellow',
+        fontSize=18
+    ).encode(
+        x='hora',
+        y='montante',
+        text=alt.Text('montante', format='.2f')
+    )
+
+    # Combina o gráfico base, linhas de limite, marcador e rótulo
+    chart = (
+        (chart_base + linhas_limite + marcador + rotulo)
+        .properties(
+            padding={"left": 20, "right": 20, "top": 20, "bottom": 20},
+            background='black'
+        )
+        .configure_axis(labelFontSize=18, titleFontSize=20)
+        .configure_legend(labelFontSize=18, titleFontSize=20)
+        .configure_title(fontSize=24)
+    )
+
     st.altair_chart(chart, use_container_width=True)
     st.experimental_rerun = lambda: None  # type: ignore # Evita erro caso não exista
     st.experimental_rerun() # type: ignore
