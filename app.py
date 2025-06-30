@@ -72,8 +72,8 @@ def app():
             y=alt.Y(
                 'montante',
                 title='Montante',
-                scale=alt.Scale(domain=[220.38, 220.46]),
-                axis=alt.Axis(format='.2f', values=[round(x, 2) for x in list(frange(220.38, 220.46, 0.01))])
+                scale=alt.Scale(domain=[220.39, 220.45]),
+                axis=alt.Axis(format='.2f', values=[round(x, 2) for x in list(frange(220.39, 220.45, 0.01))])
             ),
             tooltip=[alt.Tooltip('hora', title='Hora'), alt.Tooltip('montante', title='Montante', format='.2f')]
         )
