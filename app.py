@@ -34,8 +34,13 @@ def import_json_from_url():
 
 def gerar_dataframe_medicoes():
     dados_json = import_json_from_url()
+    if dados_json is None or 'medicoes' not in dados_json or not dados_json['medicoes']:
+        return pd.DataFrame() # Retorna um DataFrame vazio se não houver dados válidos
+
     df = pd.DataFrame(dados_json)
     df_medicoes = pd.json_normalize(df['medicoes']) # type: ignore
+    if df_medicoes.empty:
+        return pd.DataFrame() # Retorna um DataFrame vazio se não houver medições
     df_medicoes.set_index('data', inplace=True)
     df_medicoes['hora'] = pd.to_datetime(df_medicoes.index).strftime('%H:%M')
     df = df_medicoes[['hora','cotareal']].copy() # separa somente a série cotareal
