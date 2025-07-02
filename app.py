@@ -62,6 +62,8 @@ def app():
     st.set_page_config(page_title=f"UHE Teles Pires - Hidrologia - {data_formatada_titulo}", layout="wide", page_icon="📈")
     st.markdown(f"<h1 style='text-align: center;'>UHE Teles Pires - Hidrologia em {data_formatada_titulo}</h1>", unsafe_allow_html=True)
 
+    
+
     # Atualização automática a cada minuto
     st_autorefresh(interval=60 * 1000, key="refresh")
 
